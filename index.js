@@ -14,11 +14,9 @@ const dbConfig = {
   port: 5432,
 };
 
-const dbClient = new pg.Client(dbConfig);
+const db = new pg.Client(dbConfig);
 
-dbClient
-  .connect()
-  .then(() => console.log("Successfully connected to PostgreSQL database"));
+db.connect().then(console.log("Successfully connected to PostgreSQL database"));
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -78,6 +76,7 @@ app.post("/save", async (req, res) => {
       [olid, book_cover]
     );
 
+    searchedBooks = [];
     res.redirect("/");
   } catch (error) {
     console.error(error);
