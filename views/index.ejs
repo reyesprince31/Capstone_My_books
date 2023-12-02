@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <header>
+      <div>
+        <span>Search</span>
+        <form action="/search" method="post">
+          <input type="text" name="title" />
+          <button type="submit">search</button>
+        </form>
+      </div>
+    </header>
+
+    <section>
+      <div>
+        <% if (locals.bookResult){ %> <% bookResult.forEach(book => { %>
+
+        <ul>
+          <a href="add<%= book.key %>">
+            <li>
+              <% if (book.cover_edition_key) { %>
+              <img
+                src="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg"
+                alt="" />
+              <% } else { %>
+              <img src="img/no-img.png" alt="" />
+              <% } %>
+
+              <span>Publish Year: <%= book.first_publish_year %></span>
+              <h2><%= book.title %></h2>
+              <p><%= book.subtitle %></p>
+              <span>ratings: <%= book.ratings_average %></span>
+            </li>
+          </a>
+        </ul>
+        <% }) %> <%} else { %>
+        <h2>search now</h2>
+        <% } %>
+      </div>
+    </section>
+
+    <div>
+      <h1>My Recommended Books</h1>
+      <p>
+        This is the book i've read, i summarize it and take down notes for key
+        details that i want to take an action
+      </p>
+    </div>
+
+    <div>
+      <% if (locals.books) { %>
+      <ul>
+        <% books.forEach(book => { %>
+        <li>
+          <div>
+            <img src="<%=book.book_cover%>" alt="book-cover" height="250" />
+          </div>
+          <div>
+            <h2><%= book.title %></h2>
+            <p><%= book.summary %></p>
+          </div>
+          <p>Author: <%= book.author %></p>
+        </li>
+        <% }) %>
+      </ul>
+      <% } else { %>
+      <p>No books found <a href="/add">Add new?</a></p>
+      <% } %>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <% if (locals.addSearchedBook){ %>
+    <form action="/save" method="post">
+      <input type="text" name="olid" value="<%= addSearchedBook.olid %>" />
+
+      <% if (locals.addSearchedBook.book_cover) { %>
+      <input
+        type="text"
+        name="book_cover"
+        value="<%= addSearchedBook.book_cover %>" />
+      <% } else {%>
+      <input type="text" name="book_cover" placeholder="insert image link..." />
+      <% } %>
+
+      <input type="text" name="title" value="<%= addSearchedBook.title %>" />
+      <input type="text" name="author" value="<%= addSearchedBook.author %>" />
+      <textarea name="summary" cols="30" rows="10"></textarea>
+      <button type="submit">add</button>
+    </form>
+    <% } else { %>
+
+    <form action="/save" method="post">
+      <input type="text" name="title" />
+      <input type="text" name="author" />
+      <textarea name="summary" cols="30" rows="10"></textarea>
+      <button type="submit">add</button>
+    </form>
+    <% } %>
+  </body>
+</html>
