@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import pg from "pg";
 import axios from "axios";
@@ -7,11 +10,12 @@ const PORT = 3333;
 const searchURL = "http://openlibrary.org/search.json?title=";
 
 const dbConfig = {
-  user: "postgres",
-  host: "localhost",
-  database: "booksDB",
-  password: "damfar",
+  user: process.env.PG_USERNAME,
+  host: process.env.PG_HOSTNAME,
+  database: process.env.PG_DATABASE,
+  password: process.env.PG_PASSWORD,
   port: 5432,
+  ssl: true,
 };
 
 const db = new pg.Client(dbConfig);
@@ -21,6 +25,7 @@ db.connect().then(console.log("Successfully connected to PostgreSQL database"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
+//storage for temp searched title
 let searchedBooks = [];
 
 app.get("/", async (req, res) => {
@@ -38,8 +43,11 @@ app.get("/add", (req, res) => {
 
 app.get("/add/works/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id);
+
+  //clicking the chosen book and then checked for unique key and will the required data for addBook.ejs
   const foundBook = searchedBooks.find((book) => book.key === "/works/" + id);
+
+  //this one is for book_cover that compares with id params
   const foundBookCover = foundBook.cover_edition_key
     ? `https://covers.openlibrary.org/b/olid/${foundBook.cover_edition_key}-M.jpg`
     : "";
@@ -55,6 +63,7 @@ app.get("/add/works/:id", (req, res) => {
 });
 
 app.post("/search", async (req, res) => {
+  //searching for title and result will be store in searchedBooks empty array
   const response = await axios.get(searchURL + req.body.title);
   const bookResult = await response.data.docs;
 
@@ -65,6 +74,7 @@ app.post("/search", async (req, res) => {
 
 app.post("/save", async (req, res) => {
   const { olid, book_cover, title, author, summary } = req.body;
+  // when everything is in place then  it will save simultaneously on books table and books_cover table
   try {
     const savedBook = await db.query(
       "INSERT INTO books (title, author, summary, olid) VALUES ($1, $2, $3, $4) RETURNING *",
@@ -76,6 +86,7 @@ app.post("/save", async (req, res) => {
       [olid, book_cover]
     );
 
+    //empty the searchedBooks  array and then redirect
     searchedBooks = [];
     res.redirect("/");
   } catch (error) {
